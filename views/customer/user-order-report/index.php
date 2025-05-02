@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'user') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Railway Catering</title>
+    <title>College Catering</title>
     <link rel="stylesheet" href="../../css/style.css">
 
 </head>

@@ -12,7 +12,7 @@ if ($_SESSION['user_role'] != 'admin') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Railway Catering</title>
+    <title>College Catering</title>
     <link rel="stylesheet" href="../../css/style.css">
     <!-- <style href="/views/css/style.css"></style> -->
 </head>
@@ -60,7 +60,7 @@ if ($_SESSION['user_role'] != 'admin') {
                 <input type="file" name="image" accept="image/*" id="imageInput" onchange="previewImage()" required />
                 <img src="" width="100%" alt="" id="product-image" />
                 <div class="button-containers">
-                    <button  onclick="addItem()">Submit</button>
+                    <button  onclick="addItem()" id="submit-button-add"> Submit</button>
                     <button type="reset" onclick="showHome()">Clear</button>
                 </div>
 

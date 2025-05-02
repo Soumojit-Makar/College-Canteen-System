@@ -1,8 +1,8 @@
 <?php
-const HOST = "localhost";
-const USERNAME = "root";
-const PASSWORD = "";
-const DATABASE = "catering";
+const HOST = "sql209.infinityfree.com";
+const USERNAME = "if0_38816580";
+const PASSWORD = "Soumojit12";
+const DATABASE = "if0_38816580_catering";
 
 $conn = mysqli_connect(HOST, USERNAME, PASSWORD);
 

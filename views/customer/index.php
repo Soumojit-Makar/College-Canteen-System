@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'user') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Railway Catering</title>
+  <title>College Catering</title>
   <link rel="stylesheet" href="../css/style.css">
 
 </head>
@@ -49,6 +49,8 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'user') {
 
       <div id="item-list"></div>
 
+<div id="pagination-controls" class="pagination-controls" style="margin-top: 20px; text-align: center;"></div>
+
       <div class="footer">
         <div>
           Total Items: <span id="totalItems">0</span>
@@ -58,7 +60,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'user') {
         </div>
       </div>
       <div class="button-containers">
-        <button onclick="checkout()" style="width: 100%; margin-top: 10px;">Buy</button>
+        <button onclick="checkout()" id="checkout-btn" style="width: 100%; margin-top: 10px;">Buy</button>
         <button onclick="goBack()" class="back-button">Back</button>
       </div>
     </div>
@@ -83,7 +85,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'user') {
           <option value="cash"> Cash </option>
         </select>
         <div class="button-containers">
-          <button type="button" onclick="billing()"> Buy</button>
+          <button type="button" id="billing-btn" onclick="billing()"> Buy</button>
           <button type="reset" onclick="goBack()"> Cancel</button>
         </div>
 

@@ -7,7 +7,7 @@ $userRole = $_SESSION['user_role'] ?? null;
 <nav class="menu">
     <button class="menu-btn" id="m" onclick="toggleSidebar()">☰ Menu</button>
     <div class="sidebar hidden" id="sidebar">
-        <p><strong>Railway Catering</strong></p>
+        <p><strong>Railway Canteen</strong></p>
         <button class="toggle-mode" onclick="toggleDarkMode()">Dark Mode</button>
         <button onclick="toggleOpen()">Close</button>
         <?php
@@ -15,16 +15,16 @@ $userRole = $_SESSION['user_role'] ?? null;
             if ($userRole === "user") {
         ?>
 
-                <a class="menu-btn" href="/Collage-Project/views/customer"  style="width: 90%; "  > Home </a>
-                <a class="menu-btn" href="./user-order-report/"  style="width: 90%;">Order Report </a>
+                <a class="menu-btn" href="/views/customer"  style="width: 90%; "  > Home </a>
+                <a class="menu-btn" href="/views/customer/user-order-report/"  style="width: 90%;">Order Report </a>
                 <button onclick="showOrderMenu()">Add Order</button>
             <?php
             } elseif ($userRole === "admin") {
             ?>
 
-                <a class="menu-btn" href="/Collage-Project/views/admin" style="width: 90%;"> Home </a>
-                <a class="menu-btn" href="../update/"  style="width: 90%;">Update & Add Item</a>
-                <a class="menu-btn" href="../userInfo/"  style="width: 90%;">Order Status </a>
+                <a class="menu-btn" href="/views/admin" style="width: 90%;"> Home </a>
+                <a class="menu-btn" href="/views/admin/update/"  style="width: 90%;">Update & Add Item</a>
+                <a class="menu-btn" href="/views/admin/userInfo/"  style="width: 90%;">Order Status </a>
             <?php
             }
             ?>
@@ -41,5 +41,5 @@ $userRole = $_SESSION['user_role'] ?? null;
         ?>
 
     </div>
-    <h1 style="color: blue;"><strong style="color: blue;">College Catering</strong></h1>
+    <h1 style="color: blue;"><strong style="color: blue;">College Canteen</strong></h1>
 </nav>

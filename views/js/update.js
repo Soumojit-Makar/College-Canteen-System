@@ -1,10 +1,42 @@
 let items = [];
 const state = {
-  counts: []
+  counts: [],
+  currentPage: 1,
+  itemsPerPage: 5
 };
+
+function showOrderMenu() {
+  document.getElementById("main-content").classList.add("hidden");
+  document.getElementById("order-menu-form").classList.remove("hidden");
+  document.getElementById("billing-container").classList.add("hidden");
+  fetchItemsFromBackend();
+}
+
+function showHome() {
+  document.getElementById("main-content").classList.remove("hidden");
+  document.getElementById("order-menu-form").classList.add("hidden");
+  document.getElementById("billing-container").classList.add("hidden");
+}
+
+function showBilling() {
+  document.getElementById("main-content").classList.add("hidden");
+  document.getElementById("order-menu-form").classList.add("hidden");
+  document.getElementById("billing-container").classList.remove("hidden");
+}
+
+function goBack() {
+  showHome();
+}
+
+function searchItems() {
+  const term = document.getElementById('searchInput').value;
+  state.currentPage = 1; // Reset page on new search
+  fetchItemsFromBackend(term);
+}
+
 async function fetchItemsFromBackend(searchTerm = '') {
   try {
-    const response = await fetch('../../../backend/logic/getItems.php', {
+    const response = await fetch('/backend/logic/getItems.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `search=${encodeURIComponent(searchTerm)}`
@@ -15,186 +47,221 @@ async function fetchItemsFromBackend(searchTerm = '') {
     if (Array.isArray(data)) {
       items = data.map(item => ({
         id: parseInt(item.item_id),
-        image: `../../images/${item.product_image}`,
+        image: `/views/images/${item.product_image}`,
         name: item.item_name,
         price: parseFloat(item.item_price),
         avability: parseInt(item.item_quantity)
       }));
 
       state.counts = Array(items.length).fill(0);
-      loadTable()
+      renderItems();
     } else {
       showToast(data.message || "Something went wrong!", "error");
     }
   } catch (error) {
-    // console.error("Error fetching items:", error);
     showToast("Failed to fetch items!", "error");
   }
 }
-function showHome() {
-  document.getElementById("main-content").classList.remove("hidden");
-  document.getElementById("add-item-content").classList.add("hidden");
-  document.getElementById("update-item-content").classList.add("hidden");
 
-}
-function showAddItemForm() {
-  document.getElementById("main-content").classList.add("hidden");
-  document.getElementById("add-item-content").classList.remove("hidden");
-  document.getElementById("update-item-content").classList.add("hidden");
-}
-function showUpdateItemForm() {
-  document.getElementById("main-content").classList.add("hidden");
-  document.getElementById("add-item-content").classList.add("hidden");
-  document.getElementById("update-item-content").classList.remove("hidden");
-
-}
-function loadTable() {
-  const list = document.getElementById("product-table");
+function renderItems() {
+  const list = document.getElementById('item-list');
   list.innerHTML = '';
-  items.forEach((item, index) => {
-    const row = document.createElement('tr');
+
+  const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+  const endIndex = startIndex + state.itemsPerPage;
+  const visibleItems = items.slice(startIndex, endIndex);
+
+  visibleItems.forEach((item, localIndex) => {
+    const globalIndex = startIndex + localIndex;
+    const count = state.counts[globalIndex];
+
+    const row = document.createElement('div');
+    row.className = 'row';
     row.innerHTML = `
-            <td> <img src="${item.image}"/></td>
-            <td>${item.name}</td>
-            <td>&#8377 ${item.price}</td>
-            <td>${item.avability}</td>
-            <td class="button-containers">
-                <button style="width:45px" onclick="updateProduct(${item.id})" >✒️</button>
-            </td>
-        `;
+      <img src="${item.image}" alt="image" style="width: 40px; height: 40px; margin-right: 10px;">
+      <div style="flex: 1;">
+        <strong>${item.name}</strong><br>
+        Price: ₹${item.price}<br>
+        Available: ${item.avability}
+      </div>
+      <div class="item-controls" style="display: flex; align-items: center;">
+        <button onclick="updateCount(${globalIndex}, -1)" ${count === 0 ? 'disabled' : ''}>−</button>
+        <span style="margin: 0 10px;">${count}</span>
+        <button onclick="updateCount(${globalIndex}, 1)" ${count >= item.avability ? 'disabled' : ''}>+</button>
+      </div>
+    `;
+
     list.appendChild(row);
-  })
-}
-function updateProduct(id) {
-  let product = items.filter((item) => item.id === id)[0];
-  document.getElementById("product-name").value = product.name;
-  document.getElementById("product-price").value = product.price;
-  document.getElementById("product-quentity").value = product.avability;
-  document.getElementById("product-update-image").src = product.image
-  document.getElementById("update-button").innerHTML = `
-  <button type="button" onclick="update(${id})" >Submit</button>
-  <button type="reset" onclick="showHome()">Clear</button>
-  `;
-  showUpdateItemForm()
-}
-document.addEventListener("DOMContentLoaded", () => {
-  fetchItemsFromBackend()
+  });
 
-})
-function searchItems() {
-  const term = document.getElementById('searchInput').value;
-  fetchItemsFromBackend(term);
+  updateSummary();
+  renderPaginationControls();
 }
 
-function addItem() {
-  const name = document.getElementById("name").value;
-  const price = document.getElementById("price").value;
-  const quantity = document.getElementById("quantity").value;
-  const imageFile = document.getElementById("imageInput").files[0];
-  // console.log("name",name);
-  // console.log("price",price);
-  // console.log("Quentity",quantity);
-  // console.log("file",imageFile);
+function renderPaginationControls() {
+  const controls = document.getElementById('pagination-controls');
+  controls.innerHTML = '';
 
-  if (!name || !price || !quantity || !imageFile) {
-    
-    showToast("All fields are required! ", "error");
+  const totalPages = Math.ceil(items.length / state.itemsPerPage);
+
+  if (totalPages <= 1) return;
+
+  const prevBtn = document.createElement('button');
+  prevBtn.innerText = 'Previous';
+  prevBtn.disabled = state.currentPage === 1;
+  prevBtn.onclick = () => {
+    state.currentPage--;
+    renderItems();
+  };
+  controls.appendChild(prevBtn);
+
+  for (let i = 1; i <= totalPages; i++) {
+    const pageBtn = document.createElement('button');
+    pageBtn.innerText = i;
+    pageBtn.disabled = i === state.currentPage;
+    pageBtn.onclick = () => {
+      state.currentPage = i;
+      renderItems();
+    };
+    controls.appendChild(pageBtn);
+  }
+
+  const nextBtn = document.createElement('button');
+  nextBtn.innerText = 'Next';
+  nextBtn.disabled = state.currentPage === totalPages;
+  nextBtn.onclick = () => {
+    state.currentPage++;
+    renderItems();
+  };
+  controls.appendChild(nextBtn);
+}
+
+function updateCount(index, delta) {
+  const item = items[index];
+  const newCount = state.counts[index] + delta;
+
+  if (newCount >= 0 && newCount <= item.avability) {
+    state.counts[index] = newCount;
+    renderItems();
+  }
+}
+
+function updateSummary() {
+  const totalItems = state.counts.reduce((a, b) => a + b, 0);
+  const totalAmount = state.counts.reduce((sum, count, i) => sum + count * items[i].price, 0);
+  document.getElementById('totalItems').innerText = totalItems;
+  document.getElementById('totalAmount').innerText = totalAmount;
+}
+
+function getSelectedItems() {
+  return items
+    .map((item, index) => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      count: state.counts[index],
+      image: item.image,
+      totalPrice: item.price * state.counts[index]
+    }))
+    .filter(item => item.count > 0);
+}
+
+function checkout() {
+  const checkoutButton = document.getElementById('checkout-btn');
+  checkoutButton.disabled = true;
+  checkoutButton.innerText = "Processing...";
+
+  const selectedItems = getSelectedItems();
+
+  if (selectedItems.length === 0) {
+    showToast("No items selected!", "error");
+    checkoutButton.disabled = false;
+    checkoutButton.innerText = "Buy";
     return;
   }
 
-  const formData = new FormData();
-  formData.append("name", name);
-  formData.append("price", price);
-  formData.append("quentity", quantity);
-  formData.append("image", imageFile);
+  const list = document.getElementById('order-item-list');
+  list.innerHTML = '';
+  let totalItems = 0;
+  let totalAmount = 0;
 
-  fetch("../../../backend/logic/addItem.php", {
-    method: "POST",
-    body: formData
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        showToast(data.message , "success");
-      } else {
-        showToast(data.message , "error");
-      }
-      fetchItemsFromBackend()
-      showHome()
-    })
-    .catch(err => {
-      // console.error(err);
-      showToast("Something went wrong while adding the item." , "error");
-    });
+  selectedItems.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'row item-container';
+    row.innerHTML = `
+      <img src="${item.image}" alt="image" style="width: 40px; height: 40px; margin-right: 10px;">
+      <div class='item-container'>
+        <strong>${item.name}</strong>
+        <p> Price: ₹${item.totalPrice} </p>
+        <p> Quantity: ${item.count} </p>
+      </div>
+    `;
+    list.appendChild(row);
+    totalAmount += item.totalPrice;
+    totalItems += item.count;
+  });
 
+  document.getElementById('billing-totalItems').innerText = totalItems;
+  document.getElementById('billing-totalAmount').innerText = totalAmount;
+  document.getElementById('billing-totalItems').value = totalItems;
+  document.getElementById('billing-totalAmount').value = totalAmount;
+
+  showBilling();
 }
 
-function update(id) {
+function billing() {
+  const checkoutButton = document.getElementById('billing-btn');
+  checkoutButton.disabled = true;
+  checkoutButton.innerText = "Processing...";
 
-  const name = document.getElementById("product-name").value;
-  const price = document.getElementById("product-price").value;
-  const quantity = document.getElementById("product-quentity").value;
-  const imageFile = document.getElementById("imageUpdateInput").files[0];
-  // console.log(name);
-  // console.log(price);
-  // console.log(quantity);
-  // console.log(imageFile);
-  
-  
-  
-  if (!name || !price || !quantity ) {
-    
-    showToast("All fields are required! ", "error");
+  const selectedItems = getSelectedItems();
+  const totalItems = document.getElementById('billing-totalItems').value;
+  const totalAmount = document.getElementById('billing-totalAmount').value;
+  const paymentMethod = document.getElementById('payment-method').value;
+
+  if (!paymentMethod || paymentMethod.trim() === '') {
+    showToast("Select the Payment Method", "error");
+    checkoutButton.disabled = false;
+    checkoutButton.innerText = "Buy";
     return;
   }
 
-  const formData = new FormData();
-  formData.append("name", name);
-  formData.append("price", price);
-  formData.append("quantity", quantity);
-  formData.append("image", imageFile);
-  formData.append("id",id)
+  if (selectedItems.length === 0) {
+    showToast("No items selected!", "error");
+    checkoutButton.disabled = false;
+    checkoutButton.innerText = "Buy";
+    return;
+  }
 
-  fetch("../../../backend/logic/updateItem.php", {
-    method: "POST",
-    body: formData
+  const payload = {
+    items: selectedItems,
+    totalItems,
+    totalAmount,
+    paymentMethod
+  };
+
+  fetch('/backend/logic/billAdd.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
   })
-    .then(res => res.json())
+    .then(response => response.json())
     .then(data => {
       if (data.success) {
-        showToast(data.message , "success");
+        showToast("Billing successful!", "success");
+        state.counts = Array(items.length).fill(0);
+        renderItems();
+        showHome();
       } else {
-        showToast(data.message , "error");
-      }
-      fetchItemsFromBackend()
-      showHome()
-    })
-    .catch(err => {
-      // console.error(err);
-    showToast("Something went wrong while adding the item.", "error");
-    });
-}
-function deleteItem(itemId) {
-  if (!confirm("Are you sure you want to delete this item?")) return;
-
-  const formData = new FormData();
-  formData.append("id", itemId);
-
-  fetch("../../../backend/logic/deleteItem.php", {
-    method: "POST",
-    body: formData
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        showToast(data.message, "success");
-        fetchItemsFromBackend(); 
-      } else {
-        showToast(data.message, "error");
+        showToast(data.message || "Billing failed!", "error");
       }
     })
-    .catch(err => {
-      // console.error("Error deleting item:", err);
-      showToast("Something went wrong while deleting the item.", "error");
+    .catch(error => {
+      console.error("Billing error:", error);
+      showToast("Billing process encountered an error!", "error");
+    })
+    .finally(() => {
+      checkoutButton.disabled = false;
+      checkoutButton.innerText = "Buy";
     });
 }

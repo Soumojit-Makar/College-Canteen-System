@@ -9,7 +9,7 @@
   --select-text: #000000;
   --select-border: #cccccc;
   --select-hover: #f0f0f0;
-  --bg--url: url("/Collage-Project/views/images/background.jpg");
+  --bg--url: url("/views/images/background.jpg");
 }
 .search-row{
   display: flex;
@@ -32,7 +32,7 @@
   --select-text: #ffffff;
   --select-border: #444444;
   --select-hover: #333333;
-  --bg--url: url("/Collage-Project/views/images/bg-dark.png");
+  --bg--url: url("/views/images/bg-dark.png");
 }
 *{
   color: var(--text-color);
@@ -157,6 +157,8 @@ a {
   max-width: 400px;
   padding: 25px;
   border-radius: 15px;
+  border-top: 2px solid var(--btn-bg);
+  border-bottom: 2px solid var(--btn-bg);
   box-shadow: 0 4px 10px var(--shadow);
   text-align: center;
   background-color: var(--bg-color);
@@ -175,20 +177,37 @@ input {
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
+  background-color: var(--input-bg);
   border-radius: 5px;
   font-size: 16px;
   transition: 0.3s ease-in-out;
 }
 
-/* Focus effect for inputs */
 input:focus {
+  background-color: var(--input-bg);
   border-color: #007bff;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
   outline: none;
 }
 
+input[type="text"] {
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--select-border);
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  outline: none;
+}
+input[type="text"]:hover {
+  background-color: var(--select-hover);
+}
+input[type="text"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
-/* Button styling */
 button:hover {
   background: #1b15c1;
   transform: scale(1.02);
@@ -580,3 +599,17 @@ tr {
 tbody,thead{
   background: transparent;
 } 
+.pagination-controls button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: #007BFF;
+  border: none;
+  color: white;
+  border-radius: 4px;
+}
+
+.pagination-controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

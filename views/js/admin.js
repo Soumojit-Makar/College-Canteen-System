@@ -20,7 +20,7 @@ function getOrdersData() {
 }
 const orders =[]
 function getPandingOrdersItem() {
-    fetch('../../backend/logic/getPandingOrdersItem.php')
+    fetch('/backend/logic/getPandingOrdersItem.php')
     .then(response => response.json())
     .then(data => {
         data.forEach(item => {
@@ -36,7 +36,7 @@ function getPandingOrdersItem() {
     .catch(error => console.error('Error fetching orders:', error));
 }
 function showTotalOrders() {
-    fetch('../../backend/logic/findTotalOrder.php')
+    fetch('/backend/logic/findTotalOrder.php')
     .then(response => response.json())
     .then(data => {
         document.getElementById('day-total').textContent = (data.day ?? 0).toFixed(0);

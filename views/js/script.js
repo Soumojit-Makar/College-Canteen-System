@@ -39,7 +39,7 @@ function toggleOpen() {
     document.getElementById('m').classList.remove("hidden");
 }
 function logout() {
-    fetch("/Collage-Project/backend/logic/logout.php", {
+    fetch("/backend/logic/logout.php", {
         method: "GET",
     })
         .then(async res => {
@@ -55,7 +55,7 @@ function logout() {
 
             showToast(response.message, "success");
 
-            window.location.href = "/Collage-Project/";
+            window.location.href = "/";
         })
         .catch(err => {
             console.error("Error:", err.message);

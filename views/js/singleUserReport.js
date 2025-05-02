@@ -1,7 +1,7 @@
 let orderReport = [];
 
 function getReportFromServer() {
-    fetch('../../../backend/logic/getUserOrders.php')
+    fetch('/backend/logic/getUserOrders.php')
         .then(response => response.json())
         .then(data => {
             if (data) {
@@ -21,7 +21,7 @@ function getCancelOrderFromServer(orderId, callback) {
     const formData = new FormData();
     formData.append('billId', orderId);
 
-    fetch(`../../../backend/logic/cancelOrder.php`, {
+    fetch(`/backend/logic/cancelOrder.php`, {
         method: 'POST',
         body: formData
     })

@@ -1,7 +1,5 @@
-const hostname=window.location.hostname;
-const protocol=window.location.protocol;
-const port=window.location.port
-fetch("./backend/logic/session_check.php",{
+
+fetch("/backend/logic/session_check.php",{
     method:"GET"
 })
 .then(res=>res.json())
@@ -9,14 +7,14 @@ fetch("./backend/logic/session_check.php",{
     if (response.success) {
         const role= response.user.role;
         if (role==="admin") {
-            window.location.href="./views/admin/";
+            window.location.href="/views/admin/";
         }else{
-            window.location.href="./views/customer/";
+            window.location.href="/views/customer/";
         }
     }else{
-        window.location.href="./views/"
+        window.location.href="/views/"
     }
 })
-.catch(()=>window.location.href="./views/")
+.catch(()=>window.location.href="/views/")
     
 

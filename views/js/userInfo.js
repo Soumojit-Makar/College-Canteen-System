@@ -22,7 +22,7 @@ function loadTable() {
             <td>${item.totalItem}</td>
             <td>${item.totalAmount}</td>
             <td class="button-containers">
-                <button style="width:45px" onclick="showUserOrder(${item.userId})">👁️</button>
+                <button style="width:45px" id="user-order-${item.userId}"  onclick="showUserOrder(${item.userId})">👁️</button>
             </td>
         `;
         list.appendChild(row);
@@ -30,6 +30,11 @@ function loadTable() {
 }
 
 function showUserOrder(id) {
+    const userOrder = document.getElementById("user-order-" + id);
+    if (userOrder) {
+        userOrder.innerHTML = "Loading...";
+        userOrder.disabled = true;
+    }
     const user = orderedUser.find(user => parseInt(user.userId) === parseInt(id));
     console.log("Selected user ID:", id);
     console.log("Matched user:", user);
@@ -84,6 +89,9 @@ function showUserOrder(id) {
     billButtons.innerHTML = ''; 
     billButtons.appendChild(button);
     
+    userOrder.innerHTML = "👁️";
+    userOrder.disabled = false;
+    userOrder.style.cursor = "pointer";
     
         
 
@@ -98,7 +106,7 @@ function handlePayment(id) {
     const formData = new FormData();
     formData.append('userId', id);
 
-    fetch('../../../backend/logic/confirmPayment.php', {
+    fetch('/backend/logic/confirmPayment.php', {
         method: 'POST',
         body: formData
     })
@@ -125,7 +133,7 @@ function handlePayment(id) {
 }
 
 function fetchPendingOrders() {
-    fetch('../../../backend/logic/getPandingOrderInformation.php')
+    fetch('/backend/logic/getPandingOrderInformation.php')
         .then(response => response.json())
         .then(data => {
             orderedUser = data;

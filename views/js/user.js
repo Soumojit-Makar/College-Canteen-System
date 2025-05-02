@@ -31,7 +31,7 @@ function searchItems() {
 
 async function fetchItemsFromBackend(searchTerm = '') {
   try {
-    const response = await fetch('../../backend/logic/getItems.php', {
+    const response = await fetch('/backend/logic/getItems.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `search=${encodeURIComponent(searchTerm)}`
@@ -42,7 +42,7 @@ async function fetchItemsFromBackend(searchTerm = '') {
     if (Array.isArray(data)) {
       items = data.map(item => ({
         id: parseInt(item.item_id),
-        image: `../../views/images/${item.product_image}`,
+        image: `/views/images/${item.product_image}`,
         name: item.item_name,
         price: parseFloat(item.item_price),
         avability: parseInt(item.item_quantity)
@@ -115,6 +115,9 @@ function getSelectedItems() {
     .filter(item => item.count > 0);
 }
 function checkout() {
+  const checkoutButton = document.getElementById('checkout-btn');
+  checkoutButton.disabled = true;
+  checkoutButton.innerText = "Processing...";
   const selectedItems = getSelectedItems();
 
   if (selectedItems.length === 0) {
@@ -147,6 +150,9 @@ function checkout() {
   showBilling();
 }
 function billing() {
+  const checkoutButton = document.getElementById('billing-btn');
+  checkoutButton.disabled = true;
+  checkoutButton.innerText = "Processing...";
   const selectedItems = getSelectedItems();
   const billingTotalItems = document.getElementById('billing-totalItems').value;
   const billingTotalAmount = document.getElementById('billing-totalAmount').value;
@@ -170,7 +176,7 @@ function billing() {
     
   };
 
-  fetch('../../backend/logic/billAdd.php', {
+  fetch('/backend/logic/billAdd.php', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
