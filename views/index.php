@@ -17,7 +17,7 @@
 
     <div class="content">
         <div class="container" id="main-content">
-            <h2>Welcome to College Catering</h2>
+            <h2>Welcome to College Canteen</h2>
             <p>Enjoy fresh, affordable meals on campus, made to keep you energized throughout your day.</p>
             <button onclick="showLogin()" id="btn-login-form">Login</button>
             <button onclick="showSignup()" id="btn-signup-form">Sign Up</button>

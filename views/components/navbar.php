@@ -7,7 +7,7 @@ $userRole = $_SESSION['user_role'] ?? null;
 <nav class="menu">
     <button class="menu-btn" id="m" onclick="toggleSidebar()">☰ Menu</button>
     <div class="sidebar hidden" id="sidebar">
-        <p><strong>Railway Canteen</strong></p>
+        <p><strong>College Canteen</strong></p>
         <button class="toggle-mode" onclick="toggleDarkMode()">Dark Mode</button>
         <button onclick="toggleOpen()">Close</button>
         <?php

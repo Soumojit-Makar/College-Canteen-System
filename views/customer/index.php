@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'user') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>College Catering</title>
+  <title>College Canteen</title>
   <link rel="stylesheet" href="../css/style.css">
 
 </head>
@@ -28,7 +28,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'user') {
 
   <div class="content">
     <div class="container " id="main-content">
-    <h2>Welcome to College Catering</h2>
+    <h2>Welcome to College Canteening</h2>
 <p>Experience convenient, nutritious, and affordable meals on campus. Whether you're rushing between classes or relaxing with friends, our catering service is here to fuel your day with tasty food and friendly service!</p>
 <p>Explore our menu, place your order, and enjoy delicious meals delivered right to you. Let's make your campus life even better!</p>
 <p>We are here to serve you!</p>

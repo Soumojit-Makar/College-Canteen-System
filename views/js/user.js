@@ -101,12 +101,27 @@ function renderItems() {
 function renderPaginationControls() {
   const controls = document.getElementById('pagination-controls');
   controls.innerHTML = '';
-
+controls.style.display = 'flex';
+  controls.style.justifyContent = 'between';
+  controls.style.alignItems = 'center';
+  controls.style.marginTop = '20px';
+  controls.style.padding = '10px';
+  
   const totalPages = Math.ceil(items.length / state.itemsPerPage);
 
   if (totalPages <= 1) return;
 
   const prevBtn = document.createElement('button');
+  prevBtn.style.marginRight = '10px';
+  prevBtn.style.backgroundColor = '#007bff';
+  prevBtn.style.color = '#fff';
+  prevBtn.style.border = 'none';
+  prevBtn.style.padding = '5px 10px';
+  prevBtn.style.borderRadius = '5px';
+  prevBtn.style.cursor = 'pointer';
+  prevBtn.style.fontSize = '14px';
+  prevBtn.style.fontWeight = 'bold';
+
   prevBtn.innerText = 'Previous';
   prevBtn.disabled = state.currentPage === 1;
   prevBtn.onclick = () => {
@@ -115,20 +130,26 @@ function renderPaginationControls() {
   };
   controls.appendChild(prevBtn);
 
-  for (let i = 1; i <= totalPages; i++) {
-    const pageBtn = document.createElement('button');
-    pageBtn.innerText = i;
-    pageBtn.disabled = i === state.currentPage;
-    pageBtn.onclick = () => {
-      state.currentPage = i;
-      renderItems();
-    };
-    controls.appendChild(pageBtn);
-  }
 
   const nextBtn = document.createElement('button');
   nextBtn.innerText = 'Next';
   nextBtn.disabled = state.currentPage === totalPages;
+  nextBtn.style.marginLeft = '10px';
+  nextBtn.style.backgroundColor = '#007bff';
+  nextBtn.style.color = '#fff';
+  nextBtn.style.border = 'none';
+  nextBtn.style.padding = '5px 10px';
+  nextBtn.style.borderRadius = '5px';
+  nextBtn.style.cursor = 'pointer';
+  nextBtn.style.fontSize = '14px';
+  nextBtn.style.fontWeight = 'bold';
+  nextBtn.style.marginLeft = '10px';
+  nextBtn.style.backgroundColor = '#007bff';
+  nextBtn.style.color = '#fff';
+  nextBtn.style.border = 'none';
+  nextBtn.style.padding = '5px 10px';
+  nextBtn.style.borderRadius = '5px';
+  
   nextBtn.onclick = () => {
     state.currentPage++;
     renderItems();
