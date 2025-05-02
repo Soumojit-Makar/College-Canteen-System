@@ -1,5 +1,10 @@
 <?php
 session_start();
+
+if ($_SESSION['user_role'] != 'admin') {
+    header("Location: ../../");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,10 +70,8 @@ session_start();
                 <p>Total Amount: <span id="total-amount"></span> </p>
                 <p>Total Quentity: <span id="total-quentity"></span> </p>
             </div>
-            
-                <button class="back-button" onclick="showHome()">Back</button>
+            <div id="bill-buttons" class="button-containers" style="width: 100%;"></div>
 
-            </div>
         </div>
         
     </div>

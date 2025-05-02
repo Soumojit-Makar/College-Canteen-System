@@ -9,6 +9,7 @@
   --select-text: #000000;
   --select-border: #cccccc;
   --select-hover: #f0f0f0;
+  --bg--url: url("/Collage-Project/views/images/background.jpg");
 }
 .search-row{
   display: flex;
@@ -31,12 +32,18 @@
   --select-text: #ffffff;
   --select-border: #444444;
   --select-hover: #333333;
+  --bg--url: url("/Collage-Project/views/images/bg-dark.png");
 }
-
+*{
+  color: var(--text-color);
+}
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: var(--bg-color);
+  /* background-color: var(--bg-color);
+   */
   color: var(--text-color);
+  background:var(--bg--url) no-repeat center center fixed;
+  background-size: cover;
   margin: 0;
   padding: 0;
   display: flex;
@@ -199,43 +206,107 @@ button:active {
 
 @media (max-width: 768px) {
   .sidebar {
-
     display: flex;
     position: fixed;
     height: 100vh;
     top: 0;
+    /* left: -250px;  */
     width: 250px;
     background: var(--bg-color);
     box-shadow: 2px 0 10px var(--shadow);
-    transition: left 0.3s ease;
+    transition: left 0.3s ease; 
+    flex-direction: column; 
+    padding-top: 20px;
+  }
+
+   .sidebar a {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    text-decoration: none;
+    color: #fff;
+    font-size: 16px;
+    background-color: #2f0eeb; 
+    border-radius: 5px;
+    text-align: center;
   }
 
   .menu-btn {
     display: inline-block;
     width: 100px;
     margin: 10px;
-  }
- 
-  .sidebar a{
-    display: inline-block;
-    width: 80%;
-    margin: 10px;
-  }
-
-  .sidebar.open {
-    left: 0;
+    text-align: center;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
   }
 
   .menu p {
     margin: 20px;
   }
+
+  .sidebar.open {
+    left: 0;
+  }
+}
+.sidebar.open{
+  left: 0;
+}
+.sidebar {
+  display: flex;
+  position: fixed;
+  height: 100vh;
+  top: 0;
+  /* left: -50px;  */
+  width: 250px;
+  background: var(--bg-color);
+  box-shadow: 2px 0 10px var(--shadow);
+  transition: left 0.3s ease;
+  flex-direction: column;
+  padding-top: 20px;
 }
 
+
+.sidebar a {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  text-decoration: none;
+  color: var(--text-color);
+  font-size: 16px;
+  background-color: #3b63ea;
+  border-radius: 5px;
+  text-align: center;
+}
+.sidebar a:hover {
+  background-color: #062af0;
+  /* color: #fff; */
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 10px var(--shadow);
+  border-radius: 5px;
+  color: var(--text-color);
+  font-size: 16px;
+  font-weight: bold;
+
+}
 .menu-btn {
   display: inline-block;
   width: 100px;
   margin: 10px;
   text-align: center;
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .menu p {
@@ -320,8 +391,8 @@ select[name="payment-method"] {
 
 .button-containers {
   display: flex;
-  gap: 10px;
-  justify-content: baseline;
+  gap: 5px;
+  justify-content: center;
 }
 
 button[type="submit"] {
@@ -509,4 +580,3 @@ tr {
 tbody,thead{
   background: transparent;
 } 
-

@@ -18,26 +18,38 @@ function getOrdersData() {
     document.getElementById("main-content").classList.add("hidden");
     document.getElementById("orders").classList.remove("hidden");
 }
-const orders =[
-    {
-        itemName: "Product 1",
-        itemQuentity:20
-    },
-    {
-        itemName: "Product 2",
-        itemQuentity:30
-    },
-    {
-        itemName: "Product 3",
-        itemQuentity:5
-    },
-    {
-        itemName: "Product 4",
-        itemQuentity:25
-    }
-]
+const orders =[]
+function getPandingOrdersItem() {
+    fetch('../../backend/logic/getPandingOrdersItem.php')
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(item => {
+            console.log(item.itemName, item.itemQuantity);
+            orders.push({
+                itemName: item.itemName,
+                itemQuentity: item.itemQuantity,
+            });
+        });
+        
+    document.getElementById("panding-orders-count").innerText= orders.length
+    })
+    .catch(error => console.error('Error fetching orders:', error));
+}
+function showTotalOrders() {
+    fetch('../../backend/logic/findTotalOrder.php')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('day-total').textContent = (data.day ?? 0).toFixed(0);
+        document.getElementById('month-total').textContent = (data.month ?? 0).toFixed(0);
+        document.getElementById('year-total').textContent = (data.year ?? 0).toFixed(0);
+    })
+    .catch(error => {
+        console.error('Error fetching totals:', error);
+        showToast("Failed to fetch totals. Please try again.", "error", 3000);
+    });
+}
 document.addEventListener("DOMContentLoaded",()=>{
-    const len=orders.length
-    document.getElementById("panding-orders-count").innerText=len
+    getPandingOrdersItem()
+    showTotalOrders()
 })
 

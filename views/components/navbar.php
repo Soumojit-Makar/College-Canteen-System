@@ -15,15 +15,16 @@ $userRole = $_SESSION['user_role'] ?? null;
             if ($userRole === "user") {
         ?>
 
-                <a class="menu-btn" href="/Collage-Project/views/customer"> Home </a>
+                <a class="menu-btn" href="/Collage-Project/views/customer"  style="width: 90%; "  > Home </a>
+                <a class="menu-btn" href="./user-order-report/"  style="width: 90%;">Order Report </a>
                 <button onclick="showOrderMenu()">Add Order</button>
             <?php
             } elseif ($userRole === "admin") {
             ?>
 
-                <a class="menu-btn" href="/Collage-Project/views/admin"> Home </a>
-                <a class="menu-btn" href="../update/">Update & Add Item</a>
-                <a class="menu-btn" href="../userInfo/">Order Status </a>
+                <a class="menu-btn" href="/Collage-Project/views/admin" style="width: 90%;"> Home </a>
+                <a class="menu-btn" href="../update/"  style="width: 90%;">Update & Add Item</a>
+                <a class="menu-btn" href="../userInfo/"  style="width: 90%;">Order Status </a>
             <?php
             }
             ?>
@@ -40,5 +41,5 @@ $userRole = $_SESSION['user_role'] ?? null;
         ?>
 
     </div>
-    <h1><strong>Railway Catering</strong></h1>
+    <h1 style="color: blue;"><strong style="color: blue;">College Catering</strong></h1>
 </nav>

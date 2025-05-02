@@ -16,12 +16,13 @@
     </header>
 
     <div class="content">
-        <div class="container" id="main-content">
-            <h2>Welcome to Railway Catering</h2>
-            <p>Enjoy a delightful dining experience on your journey.</p>
-            <button onclick="showLogin()">Login</button>
-            <button onclick="showSignup()">Sign Up</button>
-        </div>
+    <div class="container" id="main-content">
+    <h2>Welcome to College Catering</h2>
+    <p>Enjoy fresh, affordable meals on campus, made to keep you energized throughout your day.</p>
+    <button onclick="showLogin()">Login</button>
+    <button onclick="showSignup()">Sign Up</button>
+</div>
+
 
         <div class="container hidden" id="login-form">
             <h2>Login</h2>

@@ -27,7 +27,7 @@ async function fetchItemsFromBackend(searchTerm = '') {
       showToast(data.message || "Something went wrong!", "error");
     }
   } catch (error) {
-    console.error("Error fetching items:", error);
+    // console.error("Error fetching items:", error);
     showToast("Failed to fetch items!", "error");
   }
 }
@@ -46,6 +46,7 @@ function showUpdateItemForm() {
   document.getElementById("main-content").classList.add("hidden");
   document.getElementById("add-item-content").classList.add("hidden");
   document.getElementById("update-item-content").classList.remove("hidden");
+
 }
 function loadTable() {
   const list = document.getElementById("product-table");
@@ -59,7 +60,6 @@ function loadTable() {
             <td>${item.avability}</td>
             <td class="button-containers">
                 <button style="width:45px" onclick="updateProduct(${item.id})" >✒️</button>
-                <button style="width:45px" class="back-button">🗑️</button>
             </td>
         `;
     list.appendChild(row);
@@ -71,12 +71,15 @@ function updateProduct(id) {
   document.getElementById("product-price").value = product.price;
   document.getElementById("product-quentity").value = product.avability;
   document.getElementById("product-update-image").src = product.image
-
+  document.getElementById("update-button").innerHTML = `
+  <button type="button" onclick="update(${id})" >Submit</button>
+  <button type="reset" onclick="showHome()">Clear</button>
+  `;
   showUpdateItemForm()
 }
 document.addEventListener("DOMContentLoaded", () => {
   fetchItemsFromBackend()
-  
+
 })
 function searchItems() {
   const term = document.getElementById('searchInput').value;
@@ -94,7 +97,8 @@ function addItem() {
   // console.log("file",imageFile);
 
   if (!name || !price || !quantity || !imageFile) {
-    alert("All fields are required! 1");
+    
+    showToast("All fields are required! ", "error");
     return;
   }
 
@@ -111,19 +115,86 @@ function addItem() {
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        alert(data.message);
+        showToast(data.message , "success");
       } else {
-        alert(data.message);
+        showToast(data.message , "error");
       }
+      fetchItemsFromBackend()
       showHome()
     })
     .catch(err => {
-      console.error(err);
-      alert("Something went wrong while adding the item.");
+      // console.error(err);
+      showToast("Something went wrong while adding the item." , "error");
     });
 
 }
 
-function update(){
+function update(id) {
 
+  const name = document.getElementById("product-name").value;
+  const price = document.getElementById("product-price").value;
+  const quantity = document.getElementById("product-quentity").value;
+  const imageFile = document.getElementById("imageUpdateInput").files[0];
+  // console.log(name);
+  // console.log(price);
+  // console.log(quantity);
+  // console.log(imageFile);
+  
+  
+  
+  if (!name || !price || !quantity ) {
+    
+    showToast("All fields are required! ", "error");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("price", price);
+  formData.append("quantity", quantity);
+  formData.append("image", imageFile);
+  formData.append("id",id)
+
+  fetch("../../../backend/logic/updateItem.php", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        showToast(data.message , "success");
+      } else {
+        showToast(data.message , "error");
+      }
+      fetchItemsFromBackend()
+      showHome()
+    })
+    .catch(err => {
+      // console.error(err);
+    showToast("Something went wrong while adding the item.", "error");
+    });
+}
+function deleteItem(itemId) {
+  if (!confirm("Are you sure you want to delete this item?")) return;
+
+  const formData = new FormData();
+  formData.append("id", itemId);
+
+  fetch("../../../backend/logic/deleteItem.php", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        showToast(data.message, "success");
+        fetchItemsFromBackend(); 
+      } else {
+        showToast(data.message, "error");
+      }
+    })
+    .catch(err => {
+      // console.error("Error deleting item:", err);
+      showToast("Something went wrong while deleting the item.", "error");
+    });
 }

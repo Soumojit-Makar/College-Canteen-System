@@ -14,7 +14,6 @@ if (!$name || !$price || !$quantity || !isset($_FILES['image'])) {
     exit;
 }
 
-// Setup image upload
 $uploadDir = '../../views/images/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
@@ -26,11 +25,9 @@ $filename = uniqid('product_') . '.' . $ext;
 $targetFile = $uploadDir . $filename;
 
 if (move_uploaded_file($image['tmp_name'], $targetFile)) {
-    // Convert price and quantity to integers
+
     $intPrice = (int) $price;
     $intQuantity = (int) $quantity;
-
-    // Insert into database
     $sql = "INSERT INTO `item` (`item_name`, `item_price`, `item_quantity`, `product_image`)
             VALUES ('$name', '$intPrice', '$intQuantity', '$filename')";
     $result = mysqli_query($conn, $sql);
@@ -38,7 +35,7 @@ if (move_uploaded_file($image['tmp_name'], $targetFile)) {
     if ($result) {
         echo json_encode([
             'success' => true,
-            'message' => '✅ Product added successfully',
+            'message' => 'Product added successfully',
             'data' => [
                 'name' => $name,
                 'price' => $intPrice,
@@ -47,9 +44,9 @@ if (move_uploaded_file($image['tmp_name'], $targetFile)) {
             ]
         ]);
     } else {
-        echo json_encode(['success' => false, 'message' => '❌ Failed to insert item into database']);
+        echo json_encode(['success' => false, 'message' => 'Failed to insert item into database']);
     }
 } else {
-    echo json_encode(['success' => false, 'message' => '❌ Image upload failed']);
+    echo json_encode(['success' => false, 'message' => 'Image upload failed']);
 }
 ?>

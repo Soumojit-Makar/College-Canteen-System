@@ -2,107 +2,141 @@ function showHome() {
     document.getElementById("main-content").classList.remove("hidden");
     document.getElementById("student-bill-content").classList.add("hidden");
 }
+
 function showBill() {
     document.getElementById("main-content").classList.add("hidden");
     document.getElementById("student-bill-content").classList.remove("hidden");
 }
-const orderedUser=[
-    {
-        userId:101,
-        userName:"Soumojit Makar",
-        userPhone:8250431994,
-        totalAmount:400,
-        totalItem:6,
-        orderStatus:"panding",
-        orderedItems:[
-            {
-                id: 101,
-                name: "Product 1",
-                price: 50,
-                count: 4,
-                image: '/views/images/food.jpg',
-                totalPrice: 200
-            },
-            {
-                id: 102,
-                name: "Product 2",
-                price: 100,
-                count: 2,
-                image: '/views/images/food.jpg',
-                totalPrice: 200
-            },
 
-        ]
-    },
-    {
-        userId:102,
-        userName:"Ram",
-        userPhone:8250431994,
-        totalAmount:400,
-        totalItem:6,
-        orderedItems:[
-            {
-                id: 101,
-                name: "Product 1",
-                price: 50,
-                count: 4,
-                image: '/views/images/food.jpg',
-                totalPrice: 200
-            },
-            {
-                id: 102,
-                name: "Product 2",
-                price: 100,
-                count: 2,
-                image: '/views/images/food.jpg',
-                totalPrice: 200
-            },
+let orderedUser = [];
 
-        ]
-    }
-]
-function loadTable(){
-    const list=document.getElementById("user-table");
-    list.innerHTML='';
-    orderedUser.forEach((item,index)=>{
-        const row=document.createElement('tr');
-        row.innerHTML=`
-            
+function loadTable() {
+    const list = document.getElementById("user-table");
+    list.innerHTML = '';
+
+    orderedUser.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
             <td>${item.userName}</td>
-            <td>&phone; ${item.userPhone}</td>
+            <td>📞 ${item.userPhone}</td>
             <td>${item.totalItem}</td>
             <td>${item.totalAmount}</td>
             <td class="button-containers">
-                <button style="width:45px" onclick="showUserOrder(${item.userId})" >👁️</button>
+                <button style="width:45px" onclick="showUserOrder(${item.userId})">👁️</button>
             </td>
         `;
         list.appendChild(row);
-    })
+    });
 }
-function showUserOrder(id){
-    let user= orderedUser.filter((user)=>user.userId===id)[0];
-    const list=document.getElementById("user-bill-table");
-    list.innerHTML='';
-    user.orderedItems.forEach((item,index)=>{
-        const row=document.createElement('tr');
+
+function showUserOrder(id) {
+    const user = orderedUser.find(user => parseInt(user.userId) === parseInt(id));
+    console.log("Selected user ID:", id);
+    console.log("Matched user:", user);
+
+    if (!user) {
+        // alert("User not found!");
+        showToast("User not found!", "error", 3000);
+        return;
+    }
+
+    const list = document.getElementById("user-bill-table");
+    if (list) {
+        list.innerHTML = '';
+        user.orderedItems.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.count}</td>
+                <td>${item.price}</td>
+                <td>${item.totalPrice}</td>
+            `;
+            list.appendChild(row);
+        });
+    }
+
+    document.getElementById("total-amount").textContent = user.totalAmount;
+    document.getElementById("total-quentity").textContent = user.totalItem;
+    document.getElementById("bill-name").textContent = user.userName;
+    document.getElementById("bill-phone").textContent = user.userPhone;
+
+    const billButtons = document.getElementById("bill-buttons");
+
+    if (!billButtons) {
+        // console.error("Element with id 'bill-buttons' not found.");
         
-        row.innerHTML=`
-            
-            <td>${item.name}</td>
-            <td>${item.count}</td>
-            <td>${item.price}</td>
-            <td>${item.totalPrice}</td>
-        `;
-        list.appendChild(row);
-    })
+        showToast("Element with id 'bill-buttons' not found.", "error", 3000);
+        return; 
+    }
+
+    const button = document.createElement("div");
+   
+    button.style.width = "100%";
+    button.style.display = "flex";
+    button.style.justifyContent = "space-between";
+    button.style.alignItems = "center";
+    button.style.padding = "10px";
+    button.innerHTML = `
+    
+        <button class="confirm-button" id="confirm-button" style="width: 60%;" onclick="handlePayment(${user.userId})">Payment Received</button>
+        <button class="back-button" onclick="showHome()" style="width: 30%;" >Back</button>
+    `;
+    billButtons.innerHTML = ''; 
+    billButtons.appendChild(button);
     
     
-    document.getElementById("total-amount").innerText=user.totalAmount;
-    document.getElementById("total-quentity").innerText=user.totalItem;
-    document.getElementById("bill-name").innerText=user.userName;
-    document.getElementById("bill-phone").innerText=user.userPhone;
-    showBill()
+        
+
+    showBill();
 }
-document.addEventListener("DOMContentLoaded",()=>{
-    loadTable()
-})
+
+function handlePayment(id) {
+    const confirmButton = document.getElementById("confirm-button");
+    confirmButton.innerText = "Processing...";
+    confirmButton.disabled = true;
+
+    const formData = new FormData();
+    formData.append('userId', id);
+
+    fetch('../../../backend/logic/confirmPayment.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // alert("Payment confirmed successfully!");
+            showToast("Payment confirmed successfully!", "success", 3000);
+            fetchPendingOrders();
+            showHome();
+        } else {
+            // alert("Failed to confirm payment. Please try again.");
+            showToast("Failed to confirm payment. Please try again.", "error", 3000);
+        }
+    })
+    .catch(error => {
+        console.error("Error confirming payment:", error);
+        showToast("Error confirming payment. Please try again.", "error", 3000);
+    })
+    .finally(() => {
+        confirmButton.innerText = "Payment Received";
+        confirmButton.disabled = false;
+    });
+}
+
+function fetchPendingOrders() {
+    fetch('../../../backend/logic/getPandingOrderInformation.php')
+        .then(response => response.json())
+        .then(data => {
+            orderedUser = data;
+            loadTable();
+        })
+        .catch(error => {
+            // console.error("Failed to load pending orders:", error);
+            showToast("Failed to load pending orders. Please try again.", "error", 3000);
+        });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    fetchPendingOrders();
+});

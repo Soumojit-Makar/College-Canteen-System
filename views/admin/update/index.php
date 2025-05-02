@@ -1,5 +1,10 @@
 <?php
 session_start();
+
+if ($_SESSION['user_role'] != 'admin') {
+    header("Location: ../../");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,17 +68,18 @@ session_start();
         <div class="container  hidden " id="update-item-content">
             <h1>Update Item</h1>
             <hr>
-            
+                <label for="">Product Name</label>                
                 <input type="text" id="product-name" name="name" placeholder="Enter Product Name"  />
-                <div style="display: flex; gap: 5px;">
+                <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
+                    <label for="">Price</label>
                     <input type="text" id="product-price" name="price" placeholder="Enter Product Price" />
+                    <label for="">Quentity</label>
                     <input type="text" id="product-quentity" name="quentity" placeholder="Enter Product Quentity" />
                 </div>
                 <input type="file" name="image" accept="image/*" id="imageUpdateInput" onchange="previewImageUpdate()" required />
                 <img src="" width="100%" alt="" id="product-update-image" />
-                <div class="button-containers">
-                    <button type="button" onclick="update()">Submit</button>
-                    <button type="reset" onclick="showHome()">Clear</button>
+                <div class="button-containers" id="update-button">
+                    
                 </div>
            
         </div>

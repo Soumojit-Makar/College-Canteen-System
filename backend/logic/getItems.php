@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 session_start();
 include '../config.php';
 
@@ -17,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $result = mysqli_query($conn, $sql);
     if ($result) {
-        if (mysqli_num_rows($result)) {
+        if (mysqli_num_rows($result)>0) {
             $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
             echo json_encode($array);
         } else {
@@ -26,5 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         echo json_encode(["success" => false, "message" => mysqli_error($conn)]);
     }
+
 }
 ?>

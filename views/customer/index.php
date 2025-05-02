@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'user') {
+    header("Location: ../");
+    exit();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,11 +28,11 @@ session_start();
 
   <div class="content">
     <div class="container " id="main-content">
-      <h2>Welcome to Railway Catering</h2>
-      <p>Enjoy a delightful dining experience on your journey with our delicious meals and snacks. Sit back, relax, and
-        let us serve you with care and quality!
+    <h2>Welcome to College Catering</h2>
+<p>Experience convenient, nutritious, and affordable meals on campus. Whether you're rushing between classes or relaxing with friends, our catering service is here to fuel your day with tasty food and friendly service!</p>
+<p>Explore our menu, place your order, and enjoy delicious meals delivered right to you. Let's make your campus life even better!</p>
+<p>We are here to serve you!</p>
 
-      </p>
       <button onclick="showOrderMenu()">Add Order</button>
     </div>
 
@@ -77,7 +83,7 @@ session_start();
           <option value="cash"> Cash </option>
         </select>
         <div class="button-containers">
-          <button type="submit"> Buy</button>
+          <button type="button" onclick="billing()"> Buy</button>
           <button type="reset" onclick="goBack()"> Cancel</button>
         </div>
 

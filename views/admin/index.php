@@ -1,5 +1,10 @@
 <?php
 session_start();
+
+if ($_SESSION['user_role'] != 'admin') {
+    header("Location: ../../");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,8 +20,8 @@ session_start();
 <body>
 
     <div id="toast-container"></div>
-    <header >
-       <?php include_once "../components/navbar.php"; ?>
+    <header>
+        <?php include_once "../components/navbar.php"; ?>
 
     </header>
 
@@ -35,24 +40,25 @@ session_start();
                 </div>
 
             </div>
-            <div class="container ">
+            <div class="container">
                 <h1>Total Sell</h1>
                 <hr />
                 <div class="admin">
                     <h3>Day :</h3>
-                    <p>20</p>
+                    <p id="day-total">Loading...</p>
                 </div>
                 <hr />
                 <div class="admin">
                     <h3>Month :</h3>
-                    <p>50</p>
+                    <p id="month-total">Loading...</p>
                 </div>
                 <hr />
                 <div class="admin">
                     <h3>Year :</h3>
-                    <p>500</p>
+                    <p id="year-total">Loading...</p>
                 </div>
             </div>
+
         </div>
         <div class="container hidden" id="orders">
             <h1>Painding Orders</h1>

@@ -42,7 +42,7 @@ async function fetchItemsFromBackend(searchTerm = '') {
     if (Array.isArray(data)) {
       items = data.map(item => ({
         id: parseInt(item.item_id),
-        image: `../images/${item.product_image}`,
+        image: `../../views/images/${item.product_image}`,
         name: item.item_name,
         price: parseFloat(item.item_price),
         avability: parseInt(item.item_quantity)
@@ -54,7 +54,7 @@ async function fetchItemsFromBackend(searchTerm = '') {
       showToast(data.message || "Something went wrong!", "error");
     }
   } catch (error) {
-    console.error("Error fetching items:", error);
+    // console.error("Error fetching items:", error);
     showToast("Failed to fetch items!", "error");
   }
 }
@@ -121,17 +121,13 @@ function checkout() {
     showToast("No items selected!", "error");
     return;
   }
-
   const list = document.getElementById('order-item-list');
   list.innerHTML = '';
-
   let totalItems = 0;
   let totalAmount = 0;
-
   selectedItems.forEach(item => {
     const row = document.createElement('div');
     row.className = 'row item-container';
-
     row.innerHTML = `
       <img src="${item.image}" alt="image" style="width: 40px; height: 40px; margin-right: 10px;">
       <div class='item-container'>
@@ -140,15 +136,61 @@ function checkout() {
         <p> Quantity: ${item.count} </p>
       </div>
     `;
-
     list.appendChild(row);
     totalAmount += item.totalPrice;
     totalItems += item.count;
   });
-
   document.getElementById('billing-totalItems').innerText = totalItems;
   document.getElementById('billing-totalAmount').innerText = totalAmount;
-
+  document.getElementById('billing-totalItems').value = totalItems;
+  document.getElementById('billing-totalAmount').value = totalAmount;
   showBilling();
-  // console.log("Sending to backend:", selectedItems);
 }
+function billing() {
+  const selectedItems = getSelectedItems();
+  const billingTotalItems = document.getElementById('billing-totalItems').value;
+  const billingTotalAmount = document.getElementById('billing-totalAmount').value;
+  const paymentMethod = document.getElementById('payment-method').value;
+
+  if (!paymentMethod || paymentMethod.trim() === '') {
+    showToast("Select the Payment Method", "error");
+    return;
+  }
+
+  if (selectedItems.length === 0) {
+    showToast("No items selected!", "error");
+    return;
+  }
+
+  const payload = {
+    items: selectedItems,
+    totalItems: billingTotalItems,
+    totalAmount: billingTotalAmount,
+    paymentMethod: paymentMethod,
+    
+  };
+
+  fetch('../../backend/logic/billAdd.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showToast("Billing successful!", "success");
+      state.counts = Array(items.length).fill(0);
+      renderItems();
+      showHome();
+    } else {
+      showToast(data.message || "Billing failed!", "error");
+    }
+  })
+  .catch(error => {
+    console.error("Billing error:", error);
+    showToast("Billing process encountered an error!", "error");
+  });
+}
+
