@@ -1,12 +1,15 @@
 let items = [];
 const state = {
-  counts: []
+  counts: [],
+  currentPage: 1,
+  itemsPerPage: 5
 };
+
 function showOrderMenu() {
   document.getElementById("main-content").classList.add("hidden");
   document.getElementById("order-menu-form").classList.remove("hidden");
   document.getElementById("billing-container").classList.add("hidden");
-  fetchItemsFromBackend(); 
+  fetchItemsFromBackend();
 }
 
 function showHome() {
@@ -24,8 +27,10 @@ function showBilling() {
 function goBack() {
   showHome();
 }
+
 function searchItems() {
   const term = document.getElementById('searchInput').value;
+  state.currentPage = 1; // Reset page on new search
   fetchItemsFromBackend(term);
 }
 
@@ -54,20 +59,24 @@ async function fetchItemsFromBackend(searchTerm = '') {
       showToast(data.message || "Something went wrong!", "error");
     }
   } catch (error) {
-    // console.error("Error fetching items:", error);
     showToast("Failed to fetch items!", "error");
   }
 }
+
 function renderItems() {
   const list = document.getElementById('item-list');
   list.innerHTML = '';
 
-  items.forEach((item, index) => {
-    const count = state.counts[index];
+  const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+  const endIndex = startIndex + state.itemsPerPage;
+  const visibleItems = items.slice(startIndex, endIndex);
+
+  visibleItems.forEach((item, localIndex) => {
+    const globalIndex = startIndex + localIndex;
+    const count = state.counts[globalIndex];
 
     const row = document.createElement('div');
     row.className = 'row';
-
     row.innerHTML = `
       <img src="${item.image}" alt="image" style="width: 40px; height: 40px; margin-right: 10px;">
       <div style="flex: 1;">
@@ -76,9 +85,9 @@ function renderItems() {
         Available: ${item.avability}
       </div>
       <div class="item-controls" style="display: flex; align-items: center;">
-        <button onclick="updateCount(${index}, -1)" ${count === 0 ? 'disabled' : ''}>−</button>
+        <button onclick="updateCount(${globalIndex}, -1)" ${count === 0 ? 'disabled' : ''}>−</button>
         <span style="margin: 0 10px;">${count}</span>
-        <button onclick="updateCount(${index}, 1)" ${count >= item.avability ? 'disabled' : ''}>+</button>
+        <button onclick="updateCount(${globalIndex}, 1)" ${count >= item.avability ? 'disabled' : ''}>+</button>
       </div>
     `;
 
@@ -86,7 +95,47 @@ function renderItems() {
   });
 
   updateSummary();
+  renderPaginationControls();
 }
+
+function renderPaginationControls() {
+  const controls = document.getElementById('pagination-controls');
+  controls.innerHTML = '';
+
+  const totalPages = Math.ceil(items.length / state.itemsPerPage);
+
+  if (totalPages <= 1) return;
+
+  const prevBtn = document.createElement('button');
+  prevBtn.innerText = 'Previous';
+  prevBtn.disabled = state.currentPage === 1;
+  prevBtn.onclick = () => {
+    state.currentPage--;
+    renderItems();
+  };
+  controls.appendChild(prevBtn);
+
+  for (let i = 1; i <= totalPages; i++) {
+    const pageBtn = document.createElement('button');
+    pageBtn.innerText = i;
+    pageBtn.disabled = i === state.currentPage;
+    pageBtn.onclick = () => {
+      state.currentPage = i;
+      renderItems();
+    };
+    controls.appendChild(pageBtn);
+  }
+
+  const nextBtn = document.createElement('button');
+  nextBtn.innerText = 'Next';
+  nextBtn.disabled = state.currentPage === totalPages;
+  nextBtn.onclick = () => {
+    state.currentPage++;
+    renderItems();
+  };
+  controls.appendChild(nextBtn);
+}
+
 function updateCount(index, delta) {
   const item = items[index];
   const newCount = state.counts[index] + delta;
@@ -96,12 +145,14 @@ function updateCount(index, delta) {
     renderItems();
   }
 }
+
 function updateSummary() {
   const totalItems = state.counts.reduce((a, b) => a + b, 0);
   const totalAmount = state.counts.reduce((sum, count, i) => sum + count * items[i].price, 0);
   document.getElementById('totalItems').innerText = totalItems;
   document.getElementById('totalAmount').innerText = totalAmount;
 }
+
 function getSelectedItems() {
   return items
     .map((item, index) => ({
@@ -114,20 +165,26 @@ function getSelectedItems() {
     }))
     .filter(item => item.count > 0);
 }
+
 function checkout() {
   const checkoutButton = document.getElementById('checkout-btn');
   checkoutButton.disabled = true;
   checkoutButton.innerText = "Processing...";
+
   const selectedItems = getSelectedItems();
 
   if (selectedItems.length === 0) {
     showToast("No items selected!", "error");
+    checkoutButton.disabled = false;
+    checkoutButton.innerText = "Buy";
     return;
   }
+
   const list = document.getElementById('order-item-list');
   list.innerHTML = '';
   let totalItems = 0;
   let totalAmount = 0;
+
   selectedItems.forEach(item => {
     const row = document.createElement('div');
     row.className = 'row item-container';
@@ -143,60 +200,68 @@ function checkout() {
     totalAmount += item.totalPrice;
     totalItems += item.count;
   });
+
   document.getElementById('billing-totalItems').innerText = totalItems;
   document.getElementById('billing-totalAmount').innerText = totalAmount;
   document.getElementById('billing-totalItems').value = totalItems;
   document.getElementById('billing-totalAmount').value = totalAmount;
+
   showBilling();
 }
+
 function billing() {
   const checkoutButton = document.getElementById('billing-btn');
   checkoutButton.disabled = true;
   checkoutButton.innerText = "Processing...";
+
   const selectedItems = getSelectedItems();
-  const billingTotalItems = document.getElementById('billing-totalItems').value;
-  const billingTotalAmount = document.getElementById('billing-totalAmount').value;
+  const totalItems = document.getElementById('billing-totalItems').value;
+  const totalAmount = document.getElementById('billing-totalAmount').value;
   const paymentMethod = document.getElementById('payment-method').value;
 
   if (!paymentMethod || paymentMethod.trim() === '') {
     showToast("Select the Payment Method", "error");
+    checkoutButton.disabled = false;
+    checkoutButton.innerText = "Buy";
     return;
   }
 
   if (selectedItems.length === 0) {
     showToast("No items selected!", "error");
+    checkoutButton.disabled = false;
+    checkoutButton.innerText = "Buy";
     return;
   }
 
   const payload = {
     items: selectedItems,
-    totalItems: billingTotalItems,
-    totalAmount: billingTotalAmount,
-    paymentMethod: paymentMethod,
-    
+    totalItems,
+    totalAmount,
+    paymentMethod
   };
 
   fetch('/backend/logic/billAdd.php', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      showToast("Billing successful!", "success");
-      state.counts = Array(items.length).fill(0);
-      renderItems();
-      showHome();
-    } else {
-      showToast(data.message || "Billing failed!", "error");
-    }
-  })
-  .catch(error => {
-    console.error("Billing error:", error);
-    showToast("Billing process encountered an error!", "error");
-  });
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showToast("Billing successful!", "success");
+        state.counts = Array(items.length).fill(0);
+        renderItems();
+        showHome();
+      } else {
+        showToast(data.message || "Billing failed!", "error");
+      }
+    })
+    .catch(error => {
+      console.error("Billing error:", error);
+      showToast("Billing process encountered an error!", "error");
+    })
+    .finally(() => {
+      checkoutButton.disabled = false;
+      checkoutButton.innerText = "Buy";
+    });
 }
-
