@@ -101,12 +101,12 @@ function renderItems() {
 function renderPaginationControls() {
   const controls = document.getElementById('pagination-controls');
   controls.innerHTML = '';
-controls.style.display = 'flex';
+  controls.style.display = 'flex';
   controls.style.justifyContent = 'between';
   controls.style.alignItems = 'center';
   controls.style.marginTop = '20px';
   controls.style.padding = '10px';
-  
+
   const totalPages = Math.ceil(items.length / state.itemsPerPage);
 
   if (totalPages <= 1) return;
@@ -149,7 +149,7 @@ controls.style.display = 'flex';
   nextBtn.style.border = 'none';
   nextBtn.style.padding = '5px 10px';
   nextBtn.style.borderRadius = '5px';
-  
+
   nextBtn.onclick = () => {
     state.currentPage++;
     renderItems();

@@ -1,3 +1,4 @@
+const orders =[]
 function showHome() {
     document.getElementById("main-content").classList.remove("hidden");
     document.getElementById("orders").classList.add("hidden");
@@ -18,7 +19,7 @@ function getOrdersData() {
     document.getElementById("main-content").classList.add("hidden");
     document.getElementById("orders").classList.remove("hidden");
 }
-const orders =[]
+
 function getPandingOrdersItem() {
     fetch('/backend/logic/getPandingOrdersItem.php')
     .then(response => response.json())
